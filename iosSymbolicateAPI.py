@@ -88,10 +88,9 @@ class SymbolicateAPI():
         try:
             command='"{}"'.format(symbolicatePath+ipsFilePath+" "+dsymFilePath+" --output "+outputFile)
             print(command)
-            output=subprocess.check_output(["bash","symbolicate.sh",self.GetXcodePath(),command],shell=True)
+            output=subprocess.check_output("bash symbolicate.sh {} {}".format(self.GetXcodePath(),command),shell=True)
             print(output)
-            #subprocess.call("export DEVELOPER_DIR={}".format(self.GetXcodePath()),shell=True)
-            #subprocess.call(command,shell=True,env=dict(DEVELOPER_DIR=self.GetXcodePath()),**os.environ)
+           
         except:
             print(sys.exc_info()[0])
             print(sys.exc_info()[1])
@@ -199,27 +198,27 @@ class DownloadThread(QThread):
 
 
 
-def StartSymbolicate():
+# def StartSymbolicate():
    
-    dsymFilePath="./inhouse.app.dSYM"
-    symbolicatePath="/Applications/Xcode11.3.app/Contents/SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash "
-    outputFile="/Users/nexon/Desktop/symbol_test/inhouse-2021-01-06-114209_output.ips"
-    ipsFilePath="/Users/nexon/Desktop/symbol_test/inhouse-2021-01-06-114209.ips"
-    try:
-        command='"{}"'.format(symbolicatePath+ipsFilePath+" "+dsymFilePath+" --output "+outputFile)
-        print(command)
-        output=subprocess.check_output('bash symbolicate.sh "/Applications/Xcode11.3.app/Contents/Developer" {}'.format(command),shell=True)
-        print(output)
-        #subprocess.call("export DEVELOPER_DIR={}".format(self.GetXcodePath()),shell=True)
-        #subprocess.call(command,shell=True,env=dict(DEVELOPER_DIR=self.GetXcodePath()),**os.environ)
-    except:
-        print(sys.exc_info()[0])
-        print(sys.exc_info()[1])
-        return False
-    return True
+#     dsymFilePath="./inhouse.app.dSYM"
+#     symbolicatePath="/Applications/Xcode11.3.app/Contents/SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash "
+#     outputFile="/Users/nexon/Desktop/symbol_test/inhouse-2021-01-06-114209_output.ips"
+#     ipsFilePath="/Users/nexon/Desktop/symbol_test/inhouse-2021-01-06-114209.ips"
+#     try:
+#         command='"{}"'.format(symbolicatePath+ipsFilePath+" "+dsymFilePath+" --output "+outputFile)
+#         print(command)
+#         output=subprocess.check_output('bash symbolicate.sh "/Applications/Xcode11.3.app/Contents/Developer" {}'.format(command),shell=True)
+#         print(output)
+#         #subprocess.call("export DEVELOPER_DIR={}".format(self.GetXcodePath()),shell=True)
+#         #subprocess.call(command,shell=True,env=dict(DEVELOPER_DIR=self.GetXcodePath()),**os.environ)
+#     except:
+#         print(sys.exc_info()[0])
+#         print(sys.exc_info()[1])
+#         return False
+#     return True
 
-if __name__ == "__main__":
-    StartSymbolicate()
+# if __name__ == "__main__":
+#     StartSymbolicate()
 
 
     
