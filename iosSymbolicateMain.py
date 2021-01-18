@@ -20,9 +20,10 @@ class MainWindow(QMainWindow,uiForm_class):
         self.UI_dsymDownLoad_pushButton.clicked.connect(self.Callback_dsymDownloadPushButton)
         self.UI_dsymFile_toolButton.clicked.connect(self.Callback_dsymFileToolButton)
         self.UI_ipsFile_toolButton.clicked.connect(self.Callback_ipsFileToolButton)
+        self.UI_symbolicate_pushButton.clicked.connect(self.Callback_SymbolicateButton)
         
 
-        pass
+      
 
     def Callback_dsymDownloadPushButton(self):
         region=self.UI_Region_comboBox.currentText()
@@ -39,6 +40,24 @@ class MainWindow(QMainWindow,uiForm_class):
     def Callback_ipsFileToolButton(self):
         filePath=QFileDialog.getOpenFileName(self)
         self.UI_ipsPath_lineEdit.setText(filePath[0])
+    
+    def Callback_SymbolicateButton(self):
+
+        self.SetEnableDownloadUI(False)
+        message="Symbolicate Failed"
+        
+        if self.symbolicateApi.StartSymbolicate(self.UI_dsymPath_lineEdit.text(),self.UI_ipsPath_lineEdit.text()):
+            message="Symbolicate Success"
+        
+        msgBox=QMessageBox()
+        msgBox.setWindowTitle("Process")
+        msgBox.setText(message)
+        msgBox.setStandardButtons(QMessageBox.Ok)
+        msgBox.exec()
+
+        self.SetEnableDownloadUI(True)
+        
+        
 
 
     def DownloadStart(self,region,serviceType,branch,buildNum):
@@ -57,6 +76,9 @@ class MainWindow(QMainWindow,uiForm_class):
         self.UI_branch_lineEdit.setEnabled(enable)
         self.UI_buildNum_lineEdit.setEnabled(enable)
         self.UI_dsymDownLoad_pushButton.setEnabled(enable)
+        self.UI_symbolicate_pushButton.setEnabled(enable)
+        self.UI_ipsPath_lineEdit.setEnabled(enable)
+        self.UI_dsymPath_lineEdit.setEnabled(enable)
 
 
     def OnDataReady(self,data):

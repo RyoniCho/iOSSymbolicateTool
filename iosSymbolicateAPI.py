@@ -2,10 +2,101 @@ import subprocess
 import sys
 from PyQt5.QtCore import *
 import ftplib
+import os
+import zipfile
+import shutil
 
 class SymbolicateAPI():
     def __init__(self):
         pass
+
+    def UnZipFile(self,dsymFilePath):
+        if os.path.exists(dsymFilePath)==False:
+            return False
+        try:
+            with zipfile.ZipFile(dsymFilePath) as zf:
+                zf.extractall()
+        except:
+            print("Unzip failed")
+            return False
+            
+        return True
+
+    def GetXcodePath(self):
+        try:
+            xcodePath=subprocess.check_output("xcode-select -p",shell=True)
+      
+            return xcodePath.decode('utf-8')
+        except:
+            print("xcode-select failed")
+            return ""
+
+
+    def GetXCodeSymbolicateToolPath(self):
+        symbolicatePath="SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash "
+        xcodePath=self.GetXcodePath()
+        xcodePath=xcodePath.replace("Developer",symbolicatePath)
+        return xcodePath
+    
+    def CopyDsymFile(self,dsymFileZipPath):
+        splitPaths=dsymFileZipPath.split('/')
+        xcarchiveFileName=splitPaths[-1].replace('.zip','')
+
+        unityframework_dsym_path="./XCode/Archive/{}/dSYMs/UnityFramework.framework.dSYM".format(xcarchiveFileName)
+        shutil.move(unityframework_dsym_path,"./UnityFramework.framework.dSYM")
+        
+        #KOREA/GLOBAL/JAPAN STAGE
+        app_dsym_path="./XCode/Archive/{}/dSYMs/inhouse.app.dSYM".format(xcarchiveFileName)
+        app_file_path="./XCode/Archive/{}/Products/Applications/inhouse.app".format(xcarchiveFileName)
+        if os.path.exists(app_dsym_path):
+            shutil.move(app_dsym_path,"./inhouse.app.dSYM")
+            shutil.move(app_file_path,"./inhouse.app")
+            return "./inhouse.app.dSYM"
+
+        #KOREA IAP/LIVE
+        app_dsym_path="./XCode/Archive/{}/dSYMs/maplem.app.dSYM".format(xcarchiveFileName)
+        app_file_path="./XCode/Archive/{}/Products/Applications/maplem.app".format(xcarchiveFileName)
+        if os.path.exists(app_dsym_path):
+            shutil.move(app_dsym_path,"./maplem.app.dSYM")
+            shutil.move(app_file_path,"./maplem.app")
+            return "./maplem.app.dSYM"
+
+        #GLOBAL IAP/LIVE
+        app_dsym_path="./XCode/Archive/{}/dSYMs/global.app.dSYM".format(xcarchiveFileName)
+        app_file_path="./XCode/Archive/{}/Products/Applications/global.app".format(xcarchiveFileName)
+        if os.path.exists(app_dsym_path):
+            shutil.move(app_dsym_path,"./global.app.dSYM")
+            shutil.move(app_file_path,"./global.app")
+            return "./global.app.dSYM"
+
+        #JAPAN IAP/LIVE
+        app_dsym_path="./XCode/Archive/{}/dSYMs/japan.app.dSYM".format(xcarchiveFileName)
+        app_file_path="./XCode/Archive/{}/Products/Applications/japan.app".format(xcarchiveFileName)
+        if os.path.exists(app_dsym_path):
+            shutil.move(app_dsym_path,"./japan.app.dSYM")
+            shutil.move(app_file_path,"./japan.app")
+            return "./japan.app.dSYM"
+        
+        return ""
+        
+
+    def StartSymbolicate(self,dsymFileZipPath,ipsFilePath):
+        self.UnZipFile(dsymFileZipPath)
+        dsymFilePath=self.CopyDsymFile(dsymFileZipPath)
+        symbolicatePath=self.GetXCodeSymbolicateToolPath()
+        outputFile=ipsFilePath.replace(".ips","_output.ips")
+        try:
+            command='"{}"'.format(symbolicatePath+ipsFilePath+" "+dsymFilePath+" --output "+outputFile)
+            print(command)
+            output=subprocess.check_output(["bash","symbolicate.sh",self.GetXcodePath(),command],shell=True)
+            print(output)
+            #subprocess.call("export DEVELOPER_DIR={}".format(self.GetXcodePath()),shell=True)
+            #subprocess.call(command,shell=True,env=dict(DEVELOPER_DIR=self.GetXcodePath()),**os.environ)
+        except:
+            print(sys.exc_info()[0])
+            print(sys.exc_info()[1])
+            return False
+        return True
 
     def StartDownloadFiles(self,_progressBar,_region,_serviceType,_branch,_buildNum):
         
@@ -106,5 +197,31 @@ class DownloadThread(QThread):
         self.data_progress.emit(str(len(data)))
 
 
+
+
+def StartSymbolicate():
+   
+    dsymFilePath="./inhouse.app.dSYM"
+    symbolicatePath="/Applications/Xcode11.3.app/Contents/SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash "
+    outputFile="/Users/nexon/Desktop/symbol_test/inhouse-2021-01-06-114209_output.ips"
+    ipsFilePath="/Users/nexon/Desktop/symbol_test/inhouse-2021-01-06-114209.ips"
+    try:
+        command='"{}"'.format(symbolicatePath+ipsFilePath+" "+dsymFilePath+" --output "+outputFile)
+        print(command)
+        output=subprocess.check_output('bash symbolicate.sh "/Applications/Xcode11.3.app/Contents/Developer" {}'.format(command),shell=True)
+        print(output)
+        #subprocess.call("export DEVELOPER_DIR={}".format(self.GetXcodePath()),shell=True)
+        #subprocess.call(command,shell=True,env=dict(DEVELOPER_DIR=self.GetXcodePath()),**os.environ)
+    except:
+        print(sys.exc_info()[0])
+        print(sys.exc_info()[1])
+        return False
+    return True
+
+if __name__ == "__main__":
+    StartSymbolicate()
+
+
+    
 
     
