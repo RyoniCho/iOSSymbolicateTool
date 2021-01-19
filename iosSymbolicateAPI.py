@@ -33,7 +33,7 @@ class SymbolicateAPI():
 
 
     def GetXCodeSymbolicateToolPath(self):
-        symbolicatePath="SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash "
+        symbolicatePath="SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash"
         xcodePath=self.GetXcodePath()
         xcodePath=xcodePath.replace("Developer",symbolicatePath)
         return xcodePath
@@ -86,9 +86,12 @@ class SymbolicateAPI():
         symbolicatePath=self.GetXCodeSymbolicateToolPath()
         outputFile=ipsFilePath.replace(".ips","_output.ips")
         try:
-            command='"{}"'.format(symbolicatePath+ipsFilePath+" "+dsymFilePath+" --output "+outputFile)
+            command='"{} {} {} --output {}"'.format(symbolicatePath,ipsFilePath,dsymFilePath,outputFile)
             print(command)
-            output=subprocess.check_output("bash symbolicate.sh {} {}".format(self.GetXcodePath(),command),shell=True)
+            xcodePath='"{}"'.format(self.GetXcodePath().strip())
+          
+            print(xcodePath)
+            output=subprocess.check_output("bash symbolicate.sh {} {}".format(xcodePath,command),shell=True)
             print(output)
            
         except:
