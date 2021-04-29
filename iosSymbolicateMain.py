@@ -3,10 +3,15 @@ from PyQt5.QtCore import *
 from PyQt5 import uic
 import sys
 from iosSymbolicateAPI import *
+import os
 
+def ResourcePath(relativePath):
+    basePath=getattr(sys,'_MEIPASS',os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(basePath,relativePath)
 
+uiFile=ResourcePath('iosSymbolicate.ui')
 #Load pyqt ui file
-uiForm_class=uic.loadUiType("iosSymbolicate.ui")[0]
+uiForm_class=uic.loadUiType(uiFile)[0]
 
 class MainWindow(QMainWindow,uiForm_class):
     def __init__(self):
@@ -83,7 +88,7 @@ class MainWindow(QMainWindow,uiForm_class):
 
     def OnDataReady(self,data):
         self.statusbar.showMessage(str(data))
-        print(str(data))
+        #print(str(data))
         
     def OnProgressReady(self,data):
         if self.progress_initilized:

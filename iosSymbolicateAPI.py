@@ -17,7 +17,7 @@ class SymbolicateAPI():
             with zipfile.ZipFile(dsymFilePath) as zf:
                 zf.extractall()
         except:
-            print("Unzip failed")
+            #print("Unzip failed")
             return False
             
         return True
@@ -28,7 +28,7 @@ class SymbolicateAPI():
       
             return xcodePath.decode('utf-8')
         except:
-            print("xcode-select failed")
+            #print("xcode-select failed")
             return ""
 
 
@@ -87,16 +87,16 @@ class SymbolicateAPI():
         outputFile=ipsFilePath.replace(".ips","_output.ips")
         try:
             command='"{} {} {} --output {}"'.format(symbolicatePath,ipsFilePath,dsymFilePath,outputFile)
-            print(command)
+            #print(command)
             xcodePath='"{}"'.format(self.GetXcodePath().strip())
           
-            print(xcodePath)
+            #print(xcodePath)
             output=subprocess.check_output("bash symbolicate.sh {} {}".format(xcodePath,command),shell=True)
-            print(output)
+            #print(output)
            
         except:
-            print(sys.exc_info()[0])
-            print(sys.exc_info()[1])
+           # print(sys.exc_info()[0])
+           # print(sys.exc_info()[1])
             return False
         return True
 
@@ -116,15 +116,21 @@ class SymbolicateAPI():
                 self.downloadFile=self.iapArchiveFileName
         else:
             self.downloadFile=self.liveArchiveFileName
+        
+        machineNumber="197"
+
+        if _region=='Korea':
+            machineNumber="187"
 
 
-        self.ftpCurl="curl ftp://mmjenkins:~tjqjxla1234@10.10.56.197/Client/{0}/{1}/IOS/{2}/{3} -o ./{4}".format(_region,_branch,_serviceType,self.downloadFile,self.downloadFile)
+        self.ftpCurl="curl ftp://mmjenkins:~tjqjxla1234@10.10.56.{0}/Client/{1}/{2}/IOS/{3}/{4} -o ./{5}".format(machineNumber,_region,_branch,_serviceType,self.downloadFile,self.downloadFile)
 
         try:
             subprocess.call(self.ftpCurl,shell=True)
         except:
-            print(sys.exc_info()[0])
-            print(sys.exc_info()[1])
+            pass
+            #print(sys.exc_info()[0])
+            #print(sys.exc_info()[1])
         
 
 class DownloadThread(QThread):
@@ -142,8 +148,11 @@ class DownloadThread(QThread):
 
     def run(self):
         self.data_downloaded.emit("FTP Status: Connecting..")
+        ftpIp='10.10.56.197'
+        if self.region=='Korea':
+            ftpIp='10.10.56.187'
 
-        with ftplib.FTP('10.10.56.197') as ftp:
+        with ftplib.FTP(ftpIp) as ftp:
             try:
                 ftp.login(user='mmjenkins',passwd='~tjqjxla1234')
             except:
@@ -173,7 +182,7 @@ class DownloadThread(QThread):
                 self.downloadFile=self.liveArchiveFileName
             
             
-            print("DownloadFile:"+self.downloadFile)
+            #print("DownloadFile:"+self.downloadFile)
            
 
 
