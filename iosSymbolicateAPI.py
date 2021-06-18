@@ -121,6 +121,8 @@ class SymbolicateAPI():
 
         if _region=='Korea':
             machineNumber="187"
+        if _region=='Global':
+            machineNumber="83"
 
 
         self.ftpCurl="curl ftp://mmjenkins:~tjqjxla1234@10.10.56.{0}/Client/{1}/{2}/IOS/{3}/{4} -o ./{5}".format(machineNumber,_region,_branch,_serviceType,self.downloadFile,self.downloadFile)
@@ -151,6 +153,8 @@ class DownloadThread(QThread):
         ftpIp='10.10.56.197'
         if self.region=='Korea':
             ftpIp='10.10.56.187'
+        if self.region=='Global':
+            ftpIp='10.10.56.83'
 
         with ftplib.FTP(ftpIp) as ftp:
             try:
