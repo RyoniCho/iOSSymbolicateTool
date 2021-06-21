@@ -15,7 +15,7 @@ class SymbolicateAPI():
             return False
         try:
             with zipfile.ZipFile(dsymFilePath) as zf:
-                zf.extractall()
+                zf.extractall('./Output/')
         except:
             #print("Unzip failed")
             return False
@@ -31,6 +31,12 @@ class SymbolicateAPI():
             #print("xcode-select failed")
             return ""
 
+    def DeleteOutput(self):
+        try:
+            shutil.rmtree('./Output')
+        except:
+            pass
+
 
     def GetXCodeSymbolicateToolPath(self):
         symbolicatePath="SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash"
@@ -42,45 +48,48 @@ class SymbolicateAPI():
         splitPaths=dsymFileZipPath.split('/')
         xcarchiveFileName=splitPaths[-1].replace('.zip','')
 
-        unityframework_dsym_path="./XCode/Archive/{}/dSYMs/UnityFramework.framework.dSYM".format(xcarchiveFileName)
-        shutil.move(unityframework_dsym_path,"./UnityFramework.framework.dSYM")
+        unityframework_dsym_path="./Output/XCode/Archive/{}/dSYMs/UnityFramework.framework.dSYM".format(xcarchiveFileName)
+        shutil.move(unityframework_dsym_path,"./Output/UnityFramework.framework.dSYM")
         
         #KOREA/GLOBAL/JAPAN STAGE
-        app_dsym_path="./XCode/Archive/{}/dSYMs/inhouse.app.dSYM".format(xcarchiveFileName)
-        app_file_path="./XCode/Archive/{}/Products/Applications/inhouse.app".format(xcarchiveFileName)
+        app_dsym_path="./Output/XCode/Archive/{}/dSYMs/inhouse.app.dSYM".format(xcarchiveFileName)
+        app_file_path="./Output/XCode/Archive/{}/Products/Applications/inhouse.app".format(xcarchiveFileName)
         if os.path.exists(app_dsym_path):
-            shutil.move(app_dsym_path,"./inhouse.app.dSYM")
-            shutil.move(app_file_path,"./inhouse.app")
-            return "./inhouse.app.dSYM"
+            shutil.move(app_dsym_path,"./Output//inhouse.app.dSYM")
+            shutil.move(app_file_path,"./Output//inhouse.app")
+            return "./Output/inhouse.app.dSYM"
 
         #KOREA IAP/LIVE
-        app_dsym_path="./XCode/Archive/{}/dSYMs/maplem.app.dSYM".format(xcarchiveFileName)
-        app_file_path="./XCode/Archive/{}/Products/Applications/maplem.app".format(xcarchiveFileName)
+        app_dsym_path="./Output/XCode/Archive/{}/dSYMs/maplem.app.dSYM".format(xcarchiveFileName)
+        app_file_path="./Output/XCode/Archive/{}/Products/Applications/maplem.app".format(xcarchiveFileName)
         if os.path.exists(app_dsym_path):
-            shutil.move(app_dsym_path,"./maplem.app.dSYM")
-            shutil.move(app_file_path,"./maplem.app")
-            return "./maplem.app.dSYM"
+            shutil.move(app_dsym_path,"./Output//maplem.app.dSYM")
+            shutil.move(app_file_path,"./Output//maplem.app")
+            return "./Output/maplem.app.dSYM"
 
         #GLOBAL IAP/LIVE
-        app_dsym_path="./XCode/Archive/{}/dSYMs/global.app.dSYM".format(xcarchiveFileName)
-        app_file_path="./XCode/Archive/{}/Products/Applications/global.app".format(xcarchiveFileName)
+        app_dsym_path="./Output/XCode/Archive/{}/dSYMs/global.app.dSYM".format(xcarchiveFileName)
+        app_file_path="./Output/XCode/Archive/{}/Products/Applications/global.app".format(xcarchiveFileName)
         if os.path.exists(app_dsym_path):
-            shutil.move(app_dsym_path,"./global.app.dSYM")
-            shutil.move(app_file_path,"./global.app")
-            return "./global.app.dSYM"
+            shutil.move(app_dsym_path,"./Output//global.app.dSYM")
+            shutil.move(app_file_path,"./Output//global.app")
+            return "./Output/global.app.dSYM"
 
         #JAPAN IAP/LIVE
-        app_dsym_path="./XCode/Archive/{}/dSYMs/japan.app.dSYM".format(xcarchiveFileName)
-        app_file_path="./XCode/Archive/{}/Products/Applications/japan.app".format(xcarchiveFileName)
+        app_dsym_path="./Output/XCode/Archive/{}/dSYMs/japan.app.dSYM".format(xcarchiveFileName)
+        app_file_path="./Output/XCode/Archive/{}/Products/Applications/japan.app".format(xcarchiveFileName)
         if os.path.exists(app_dsym_path):
-            shutil.move(app_dsym_path,"./japan.app.dSYM")
-            shutil.move(app_file_path,"./japan.app")
-            return "./japan.app.dSYM"
+            shutil.move(app_dsym_path,"./Output//japan.app.dSYM")
+            shutil.move(app_file_path,"./Output//japan.app")
+            return "./Output/japan.app.dSYM"
         
         return ""
         
 
     def StartSymbolicate(self,dsymFileZipPath,ipsFilePath):
+        if os.path.exists(dsymFileZipPath) is False or os.path.exists(ipsFilePath) is False:
+            return False
+
         self.UnZipFile(dsymFileZipPath)
         dsymFilePath=self.CopyDsymFile(dsymFileZipPath)
         symbolicatePath=self.GetXCodeSymbolicateToolPath()
@@ -198,15 +207,21 @@ class DownloadThread(QThread):
             except:
                 self.onFailed.emit("File Not Found")
                 return
-            print("totalSize:{}".format(totalSize))
+            #print("totalSize:{}".format(totalSize))
 
             self.data_progress.emit(str(totalSize))
 
             self.data_downloaded.emit('FTP Status: Downloading..')
-            with open(self.downloadFile,'wb') as self.localFile:
+            currentDir=os.getcwd()
+            if os.path.isdir(currentDir+"/Output") is False:
+                os.mkdir(currentDir+"/Output")
+            
+
+
+            with open(currentDir+"/Output/"+self.downloadFile,'wb') as self.localFile:
                 ftp.retrbinary('RETR '+self.downloadFile,self.file_write)
                 
-        self.onSuccess.emit(['FTP Status: File Download Success',self.downloadFile])
+        self.onSuccess.emit(['FTP Status: File Download Success',"./Output/"+self.downloadFile])
     def file_write(self,data):
         self.localFile.write(data)
         self.data_progress.emit(str(len(data)))
