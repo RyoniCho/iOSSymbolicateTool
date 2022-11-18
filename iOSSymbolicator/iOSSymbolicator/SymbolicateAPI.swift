@@ -45,6 +45,32 @@ class SymbolicateAPI
         
     }
     
+    func SetConfig()
+    {
+        if let path = Bundle.main.path(forResource: "Config.json", ofType: nil)
+        {
+            print("file exist")
+            do{
+                let contents = try String(contentsOfFile: path)
+               
+                let config = try? JSONDecoder().decode(Config.self,from: contents.data(using: .utf8)!)
+               
+                print(config?.CommonSettings.symbolicatePath ?? "config null")
+                
+            }
+            catch{
+                print(error.localizedDescription)
+            }
+        }
+        else{
+            print("file not exit")
+        }
+           
+        
+      
+        
+    }
+    
     func HandleFileTest()
     {
         let fileManager=FileManager()
@@ -89,4 +115,36 @@ class SymbolicateAPI
         return output
     }
     
+}
+
+struct Config : Codable
+{
+    var RegionInfo: [RegionInfo]
+    var CommonSettings: CommonSettings
+    
+    struct RegionInfo: Codable
+    {
+        var Region :String
+        var ftpServer:String
+        var buildType:[BuildType]
+        
+        
+        struct BuildType: Codable
+        {
+            var client_type:String
+            var archiveFileName: String
+            var app_dsymPath: String
+            var app_filePath :String
+        }
+    }
+    
+    struct CommonSettings:Codable
+    {
+        var symbolicatePath :String
+        var ftpCurlCommand : String
+        var getXcodePathCommand:String
+        var unityFramework_dsym_path:String
+    }
+    
+   
 }
