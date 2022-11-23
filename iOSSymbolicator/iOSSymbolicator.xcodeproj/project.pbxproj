@@ -14,6 +14,7 @@
 		21C454E4292726D400668843 /* SymbolicateAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C454E3292726D400668843 /* SymbolicateAPI.swift */; };
 		21C454E6292745F800668843 /* Config.json in Resources */ = {isa = PBXBuildFile; fileRef = 21C454E5292745F800668843 /* Config.json */; };
 		21C454E82927496400668843 /* Symbolicate.sh in Resources */ = {isa = PBXBuildFile; fileRef = 21C454E72927496400668843 /* Symbolicate.sh */; };
+		21C454EB292C64F000668843 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 21C454EA292C64F000668843 /* Zip */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				21C454EB292C64F000668843 /* Zip in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,6 +88,9 @@
 			dependencies = (
 			);
 			name = iOSSymbolicator;
+			packageProductDependencies = (
+				21C454EA292C64F000668843 /* Zip */,
+			);
 			productName = iOSSymbolicator;
 			productReference = 21C454D129271F1D00668843 /* iOSSymbolicator.app */;
 			productType = "com.apple.product-type.application";
@@ -114,6 +119,9 @@
 				Base,
 			);
 			mainGroup = 21C454C829271F1D00668843;
+			packageReferences = (
+				21C454E9292C64F000668843 /* XCRemoteSwiftPackageReference "Zip" */,
+			);
 			productRefGroup = 21C454D229271F1D00668843 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -347,6 +355,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		21C454E9292C64F000668843 /* XCRemoteSwiftPackageReference "Zip" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marmelroy/Zip.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		21C454EA292C64F000668843 /* Zip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 21C454E9292C64F000668843 /* XCRemoteSwiftPackageReference "Zip" */;
+			productName = Zip;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 21C454C929271F1D00668843 /* Project object */;
 }

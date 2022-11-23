@@ -7,11 +7,14 @@
 
 import Foundation
 
+import Zip
 
 
 
 class SymbolicateAPI
 {
+    var symbolicateTempFolderPath:URL?;
+    
     func GetXcodePath()->String{
         let result = (try? safeShell("xcode-select -p"))!
         return result
@@ -30,6 +33,18 @@ class SymbolicateAPI
     
     func StartSymbolicate(_dsymZupFilePath:String,_ipsFilePath:String)
     {
+        do {
+            if let filePath = symbolicateTempFolderPath?.appendingPathComponent("dfd.zip")
+            {
+                let unzipDirectory = try Zip.quickUnzipFile(filePath) // Unzip
+                
+                print(unzipDirectory.path)
+            }
+            
+        }
+        catch {
+            print("UnZip File: Something went wrong")
+        }
         //unzip dsym.zip
         //Copy dsym file/app file
         
@@ -43,6 +58,30 @@ class SymbolicateAPI
          
          */
         
+    }
+    
+    func DownloadFileViaFTP()
+    {
+        DispatchQueue.global(qos: .utility).async {
+            var url = URL(string: "")
+            var data:Data? = nil
+            
+            if let anUrl=url
+            {
+                do{
+                    data = try Data(contentsOf: anUrl)
+                }
+                catch
+                {
+                    print("")
+                }
+               
+            }
+            
+            DispatchQueue.main.async {
+                print(data?.hashValue)
+            }
+        }
     }
     
     func SetConfig()
@@ -63,7 +102,7 @@ class SymbolicateAPI
             }
         }
         else{
-            print("file not exit")
+            print("Config.json file not exit")
         }
            
         
@@ -76,24 +115,33 @@ class SymbolicateAPI
         let fileManager=FileManager()
         
         let documentDirectory=fileManager.urls(for:.documentDirectory,in: .userDomainMask).first
-        let dataPath=documentDirectory?.appendingPathComponent("Symbolicate_Temp")
+        symbolicateTempFolderPath=documentDirectory?.appendingPathComponent("Symbolicate_Temp")
         
-        print(dataPath!.path)
+        print(symbolicateTempFolderPath?.path ?? "symbolicate temp path is nil")
+        
         var isDir=ObjCBool(true)
-        let existDir=fileManager.fileExists(atPath: dataPath!.path, isDirectory: &isDir)
-        print("Directory exist: \(existDir)")
         
-        if existDir == true
+        if let path=symbolicateTempFolderPath?.path
         {
-            return
+            let existDir=fileManager.fileExists(atPath: path, isDirectory: &isDir)
+            
+            print("Directory exist: \(existDir)")
+            
+            if existDir == true
+            {
+                return
+            }
+              
+            do{
+                try fileManager.createDirectory(atPath: path, withIntermediateDirectories: false, attributes: nil)
+            }
+            catch let error as NSError{
+                print("Handle File Test Error:\(error)")
+            }
+            
         }
-          
-        do{
-            try fileManager.createDirectory(atPath: dataPath!.path, withIntermediateDirectories: false, attributes: nil)
-        }
-        catch let error as NSError{
-            print("Handle File Test Error:\(error)")
-        }
+       
+        
     }
     
     @discardableResult // Add to suppress warnings when you don't want/need a result

@@ -16,6 +16,7 @@ class ViewController: NSViewController {
         print(symbol.GetXcodePath())
         print(symbol.GetXcodeSymbolicateToolPath())
         symbol.HandleFileTest()
+        symbol.StartSymbolicate(_dsymZupFilePath: "", _ipsFilePath: "")
         symbol.SetConfig()
         
         // Do any additional setup after loading the view.
