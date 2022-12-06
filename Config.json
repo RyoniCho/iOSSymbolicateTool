@@ -8,20 +8,20 @@
                 {
                     "Type":"QA",
                     "archiveFileName":"MapleM_Stage_{}.{}_1.xcarchive.zip",
-                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/inhouse.app.dSYM",
-                    "app_filePath":"./XCode/Archive/{}/Products/Applications/inhouse.app"
+                    "app_dsymPath":"./Output/XCode/Archive/{}/dSYMs/inhouse.app.dSYM",
+                    "app_filePath":"./Output/XCode/Archive/{}/Products/Applications/inhouse.app"
                 },
                 {
                     "Type":"IAP",
                     "archiveFileName":"MapleM_StageIAP_{}.0_3.xcarchive.zip",
-                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/maplem.app.dSYM",
-                    "app_filePath":"./XCode/Archive/{}/Products/Applications/maplem.app"
+                    "app_dsymPath":"./Output/XCode/Archive/{}/dSYMs/maplem.app.dSYM",
+                    "app_filePath":"./Output/XCode/Archive/{}/Products/Applications/maplem.app"
                 },
                 {
                     "Type":"LIVE",
                     "archiveFileName":"MapleStoryM_{}.{}_{}.xcarchive.zip",
-                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/maplem.app.dSYM",
-                    "app_filePath":"./XCode/Archive/{}/Products/Applications/maplem.app"
+                    "app_dsymPath":"./Output/XCode/Archive/{}/dSYMs/maplem.app.dSYM",
+                    "app_filePath":"./Output/XCode/Archive/{}/Products/Applications/maplem.app"
                 }
             ]
         },
@@ -34,20 +34,20 @@
                 {
                     "Type":"QA",
                     "archiveFileName":"MapleM_Stage_{}.{}_1.xcarchive.zip",
-                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/inhouse.app.dSYM",
-                    "app_filePath":"./XCode/Archive/{}/Products/Applications/inhouse.app"
+                    "app_dsymPath":"./Output/XCode/Archive/{}/dSYMs/inhouse.app.dSYM",
+                    "app_filePath":"./Output/XCode/Archive/{}/Products/Applications/inhouse.app"
                 },
                 {
                     "Type":"IAP",
                     "archiveFileName":"MapleM_Stage_IAP_{}.0_3.xcarchive.zip",
-                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/global.app.dSYM",
-                    "app_filePath":"./XCode/Archive/{}/Products/Applications/global.app"
+                    "app_dsymPath":"./Output/XCode/Archive/{}/dSYMs/global.app.dSYM",
+                    "app_filePath":"./Output/XCode/Archive/{}/Products/Applications/global.app"
                 },
                 {
                     "Type":"LIVE",
                     "archiveFileName":"MapleStoryM_{}.{}_{}.xcarchive.zip",
-                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/global.app.dSYM",
-                    "app_filePath":"./XCode/Archive/{}/Products/Applications/global.app"
+                    "app_dsymPath":"./Output/XCode/Archive/{}/dSYMs/global.app.dSYM",
+                    "app_filePath":"./Output/XCode/Archive/{}/Products/Applications/global.app"
                 }
             ]
            
@@ -63,20 +63,20 @@
                 {
                     "Type":"QA",
                     "archiveFileName":"MapleM_Stage_{}.{}_1.xcarchive.zip",
-                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/inhouse.app.dSYM",
-                    "app_filePath":"./XCode/Archive/{}/Products/Applications/inhouse.app"
+                    "app_dsymPath":"./Output/XCode/Archive/{}/dSYMs/inhouse.app.dSYM",
+                    "app_filePath":"./Output/XCode/Archive/{}/Products/Applications/inhouse.app"
                 },
                 {
                     "Type":"IAP",
                     "archiveFileName":"MapleM_Stage_IAP_{}.0_3.xcarchive.zip",
-                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/japan.app.dSYM",
-                    "app_filePath":"./XCode/Archive/{}/Products/Applications/japan.app"
+                    "app_dsymPath":"./Output/XCode/Archive/{}/dSYMs/japan.app.dSYM",
+                    "app_filePath":"./Output/XCode/Archive/{}/Products/Applications/japan.app"
                 },
                 {
                     "Type":"LIVE",
                     "archiveFileName":"MapleStoryM_{}.{}_{}.xcarchive.zip",
-                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/japan.app.dSYM",
-                    "app_filePath":"./XCode/Archive/{}/Products/Applications/japan.app"
+                    "app_dsymPath":"./Output/XCode/Archive/{}/dSYMs/japan.app.dSYM",
+                    "app_filePath":"./Output/XCode/Archive/{}/Products/Applications/japan.app"
                 }
             ]
             
@@ -92,8 +92,8 @@
                 {
                     "Type":"QA",
                     "archiveFileName":"MapleM_Stage_{}.{}_1.xcarchive.zip",
-                    "app_dsymPath":"./XCode/Archive/MapleM_Stage_{0}_1.xarchive/dSYMs/{1}.app.dSYM",
-                    "app_filePath":"./XCode/Archive/MapleM_Stage_{0}_1.xarchive/Products/Applications/{1}.app"
+                    "app_dsymPath":"./Output/XCode/Archive/MapleM_Stage_{0}_1.xarchive/dSYMs/{1}.app.dSYM",
+                    "app_filePath":"./Output/XCode/Archive/MapleM_Stage_{0}_1.xarchive/Products/Applications/{1}.app"
                 }
             ]
           
