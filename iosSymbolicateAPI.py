@@ -17,7 +17,7 @@ class SymbolicateAPI():
             return False
         try:
             with zipfile.ZipFile(dsymFilePath) as zf:
-                zf.extractall()
+                zf.extractall('./Output/')
         except:
             #print("Unzip failed")
             return False
@@ -33,6 +33,12 @@ class SymbolicateAPI():
         except:
             #print("xcode-select failed")
             return ""
+
+    def DeleteOutput(self):
+        try:
+            shutil.rmtree('./Output')
+        except:
+            pass
 
 
     def GetXCodeSymbolicateToolPath(self):
@@ -65,6 +71,9 @@ class SymbolicateAPI():
         
 
     def StartSymbolicate(self,dsymFileZipPath,ipsFilePath):
+        if os.path.exists(dsymFileZipPath) is False or os.path.exists(ipsFilePath) is False:
+            return False
+
         self.UnZipFile(dsymFileZipPath)
         dsymFilePath=self.CopyDsymFile(dsymFileZipPath)
         symbolicatePath=self.GetXCodeSymbolicateToolPath()
@@ -218,15 +227,21 @@ class DownloadThread(QThread):
             except:
                 self.onFailed.emit("File Not Found")
                 return
-            print("totalSize:{}".format(totalSize))
+            #print("totalSize:{}".format(totalSize))
 
             self.data_progress.emit(str(totalSize))
 
             self.data_downloaded.emit('FTP Status: Downloading..')
-            with open(self.downloadFile,'wb') as self.localFile:
+            currentDir=os.getcwd()
+            if os.path.isdir(currentDir+"/Output") is False:
+                os.mkdir(currentDir+"/Output")
+            
+
+
+            with open(currentDir+"/Output/"+self.downloadFile,'wb') as self.localFile:
                 ftp.retrbinary('RETR '+self.downloadFile,self.file_write)
                 
-        self.onSuccess.emit(['FTP Status: File Download Success',self.downloadFile])
+        self.onSuccess.emit(['FTP Status: File Download Success',"./Output/"+self.downloadFile])
     def file_write(self,data):
         self.localFile.write(data)
         self.data_progress.emit(str(len(data)))

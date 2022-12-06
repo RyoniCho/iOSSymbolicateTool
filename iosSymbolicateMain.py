@@ -57,14 +57,17 @@ class MainWindow(QMainWindow,uiForm_class):
         
         if self.symbolicateApi.StartSymbolicate(self.UI_dsymPath_lineEdit.text(),self.UI_ipsPath_lineEdit.text()):
             message="Symbolicate Success"
+
         
         msgBox=QMessageBox()
         msgBox.setWindowTitle("Process")
         msgBox.setText(message)
         msgBox.setStandardButtons(QMessageBox.Ok)
         msgBox.exec()
-
+        
         self.SetEnableDownloadUI(True)
+
+        self.symbolicateApi.DeleteOutput()
         
         
 
