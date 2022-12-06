@@ -5,12 +5,14 @@ import ftplib
 import os
 import zipfile
 import shutil
+import json
 
 class SymbolicateAPI():
-    def __init__(self):
-        pass
+    def __init__(self,_config):
+        self.config=_config
 
     def UnZipFile(self,dsymFilePath):
+        
         if os.path.exists(dsymFilePath)==False:
             return False
         try:
@@ -24,7 +26,8 @@ class SymbolicateAPI():
 
     def GetXcodePath(self):
         try:
-            xcodePath=subprocess.check_output("xcode-select -p",shell=True)
+            xcodeSelectCommand = self.config.commonSettings.getXcodePathCommand
+            xcodePath=subprocess.check_output(xcodeSelectCommand,shell=True)
       
             return xcodePath.decode('utf-8')
         except:
@@ -33,7 +36,7 @@ class SymbolicateAPI():
 
 
     def GetXCodeSymbolicateToolPath(self):
-        symbolicatePath="SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash"
+        symbolicatePath= self.config.commonSettings.symbolicatePath#"SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash"
         xcodePath=self.GetXcodePath()
         xcodePath=xcodePath.replace("Developer",symbolicatePath)
         return xcodePath
@@ -42,41 +45,22 @@ class SymbolicateAPI():
         splitPaths=dsymFileZipPath.split('/')
         xcarchiveFileName=splitPaths[-1].replace('.zip','')
 
-        unityframework_dsym_path="./XCode/Archive/{}/dSYMs/UnityFramework.framework.dSYM".format(xcarchiveFileName)
+        unityframework_dsym_path=self.config.commonSettings.unityFramework_dsym_path.format(xcarchiveFileName)
         shutil.move(unityframework_dsym_path,"./UnityFramework.framework.dSYM")
         
-        #KOREA/GLOBAL/JAPAN STAGE
-        app_dsym_path="./XCode/Archive/{}/dSYMs/inhouse.app.dSYM".format(xcarchiveFileName)
-        app_file_path="./XCode/Archive/{}/Products/Applications/inhouse.app".format(xcarchiveFileName)
-        if os.path.exists(app_dsym_path):
-            shutil.move(app_dsym_path,"./inhouse.app.dSYM")
-            shutil.move(app_file_path,"./inhouse.app")
-            return "./inhouse.app.dSYM"
+        region=["Korea","Global","Japan","China"]
+        buildType=["QA","IAP","LIVE"]
+        for rg in region:
+            for bt in buildType:
+                app_dsym_path= self.config.regionInfos[rg].buildTypes[bt].app_dsymPath.format(xcarchiveFileName) #"./XCode/Archive/{}/dSYMs/inhouse.app.dSYM".format(xcarchiveFileName)
+                app_file_path=self.config.regionInfos[rg].buildTypes[bt].app_filePath.format(xcarchiveFileName)#"./XCode/Archive/{}/Products/Applications/inhouse.app".format(xcarchiveFileName)
+                app_dsym_file=app_dsym_path.split("/")[-1]
+                app_file=app_file_path.split("/")[-1]
 
-        #KOREA IAP/LIVE
-        app_dsym_path="./XCode/Archive/{}/dSYMs/maplem.app.dSYM".format(xcarchiveFileName)
-        app_file_path="./XCode/Archive/{}/Products/Applications/maplem.app".format(xcarchiveFileName)
-        if os.path.exists(app_dsym_path):
-            shutil.move(app_dsym_path,"./maplem.app.dSYM")
-            shutil.move(app_file_path,"./maplem.app")
-            return "./maplem.app.dSYM"
-
-        #GLOBAL IAP/LIVE
-        app_dsym_path="./XCode/Archive/{}/dSYMs/global.app.dSYM".format(xcarchiveFileName)
-        app_file_path="./XCode/Archive/{}/Products/Applications/global.app".format(xcarchiveFileName)
-        if os.path.exists(app_dsym_path):
-            shutil.move(app_dsym_path,"./global.app.dSYM")
-            shutil.move(app_file_path,"./global.app")
-            return "./global.app.dSYM"
-
-        #JAPAN IAP/LIVE
-        app_dsym_path="./XCode/Archive/{}/dSYMs/japan.app.dSYM".format(xcarchiveFileName)
-        app_file_path="./XCode/Archive/{}/Products/Applications/japan.app".format(xcarchiveFileName)
-        if os.path.exists(app_dsym_path):
-            shutil.move(app_dsym_path,"./japan.app.dSYM")
-            shutil.move(app_file_path,"./japan.app")
-            return "./japan.app.dSYM"
-        
+                if os.path.exists(app_dsym_path):
+                    shutil.move(app_dsym_path,f"./{app_dsym_file}")
+                    shutil.move(app_file_path,f"./{app_file}")
+                    return app_dsym_file
         return ""
         
 
@@ -96,52 +80,113 @@ class SymbolicateAPI():
            
         except:
            # print(sys.exc_info()[0])
-           # print(sys.exc_info()[1])
+           # print(sys.exc_info()[1]) 
             return False
         return True
 
-    def StartDownloadFiles(self,_progressBar,_region,_serviceType,_branch,_buildNum):
-        
-        self.qaArchiveFileName="MapleM_Stage_{}.{}_1.xcarchive.zip".format(_branch,_buildNum)
-        self.iapArchiveFileName_kor="MapleM_StageIAP_{}.0_3.xcarchive.zip".format(_branch) #Korea
-        self.iapArchiveFileName="MapleM_Stage_IAP_{}.0_3.xcarchive.zip".format(_branch) #Global,Japan
-        self.liveArchiveFileName="MapleStoryM_{}.{}_{}.xcarchive.zip".format(_branch,_buildNum,_buildNum)
+    
+class Config():
+    def __init__(self) -> None:
+        self.SetConfig()
 
-        if _serviceType == "QA":
-            self.downloadFile=self.qaArchiveFileName
-        elif _serviceType =="IAP":
-            if _region=='Korea':
-                self.downloadFile=self.iapArchiveFileName_kor
-            else:
-                self.downloadFile=self.iapArchiveFileName
-        else:
-            self.downloadFile=self.liveArchiveFileName
-        
-        machineNumber="197"
+    def SetConfig(self):
 
-        if _region=='Korea':
-            machineNumber="187"
-        if _region=='Global':
-            machineNumber="83"
-
-
-        self.ftpCurl="curl ftp://mmjenkins:~tjqjxla1234@10.10.56.{0}/Client/{1}/{2}/IOS/{3}/{4} -o ./{5}".format(machineNumber,_region,_branch,_serviceType,self.downloadFile,self.downloadFile)
 
         try:
-            subprocess.call(self.ftpCurl,shell=True)
-        except:
-            pass
-            #print(sys.exc_info()[0])
-            #print(sys.exc_info()[1])
-        
+            currentPath= os.path.abspath(os.path.dirname(__file__))
+            configFilePath=f"{currentPath}/Config.json"
+
+            if True== os.path.exists(configFilePath):
+                print('ConfigFile Exist')
+
+            
+            with open(configFilePath,'r') as f:
+                info=json.load(f)
+            
+            self.commonSettings=self.CommonSettings(info["CommonSettings"])
+
+            infos=info["RegionInfo"]
+            if infos is not None and len(infos)>0:
+                self.regionInfos = dict()
+                for info in infos:
+                    regionInfo=self.RegionInfo(info)
+                    if regionInfo is not None:
+                        self.regionInfos[regionInfo.Region]=regionInfo
+                
+
+
+
+            
+        except Exception as e:
+            print(e)
+            return
+
+    class RegionInfo():
+        def __init__(self,info):
+            self.Region=info["Region"]
+            self.ftpServer=info["ftpServer"]
+            self.ftpPath=info["ftpPath"]
+            self.buildTypes=dict()
+
+
+            jsonBts=info["buildType"]
+            if jsonBts is not None and len(jsonBts)>0:
+                for bt in jsonBts:
+                    _bt=self.BuildType(bt)
+                    if _bt is not None:
+                        self.buildTypes[_bt.Type]=_bt
+            
+           
+        class BuildType():
+            def __init__(self,_buildType):
+                self.Type=_buildType["Type"]
+                self.archiveFileName=_buildType["archiveFileName"]
+                self.app_dsymPath=_buildType["app_dsymPath"]
+                self.app_filePath=_buildType["app_filePath"]
+
+    class CommonSettings():
+        def __init__(self, commonSettingsDict):
+            try:
+                self.symbolicatePath= commonSettingsDict["symbolicatePath"]
+                self.ftpCurlCommand =commonSettingsDict["ftpCurlCommand"]
+                self.getXcodePathCommand=commonSettingsDict["getXcodePathCommand"]
+                self.unityFramework_dsym_path=commonSettingsDict["unityFramework_dsym_path"]
+                self.ftpUserName=commonSettingsDict["ftpUserName"]
+                self.ftpPassword=commonSettingsDict["ftpPassword"]
+            except Exception as e:
+                print(e)
+            
+
+
+
+     
 
 class DownloadThread(QThread):
-    def __init__(self,region,serviceType,branch,buildNum):
+    def __init__(self,_config,region,serviceType,branch,buildNum):
         super().__init__()
         self.region=region
         self.serviceType=serviceType
         self.branch=branch
         self.buildNum=buildNum
+        self.config=_config
+
+       
+        
+        self.archiveFileName =""
+        self.ftpServer=""
+        self.ftpPath=""
+
+
+        regionInfo = self.config.regionInfos[self.region]
+        if regionInfo is not None:
+            
+            self.ftpServer=regionInfo.ftpServer
+            self.ftpPath=regionInfo.ftpPath
+
+            buildtypeInfo= regionInfo.buildTypes[self.serviceType]
+            if buildtypeInfo is not None:
+                self.archiveFileName = buildtypeInfo.archiveFileName
+
 
     data_downloaded=pyqtSignal(object)
     data_progress=pyqtSignal(object)
@@ -150,49 +195,24 @@ class DownloadThread(QThread):
 
     def run(self):
         self.data_downloaded.emit("FTP Status: Connecting..")
-        ftpIp='10.10.56.197'
-        if self.region=='Korea':
-            ftpIp='10.10.56.187'
-        if self.region=='Global':
-            ftpIp='10.10.56.83'
 
-        with ftplib.FTP(ftpIp) as ftp:
+        with ftplib.FTP(self.ftpServer) as ftp:
             try:
-                ftp.login(user='mmjenkins',passwd='~tjqjxla1234')
+                ftp.login(user=self.config.commonSettings.ftpUserName,passwd=self.config.commonSettings.ftpPassword)
             except:
                 self.onFailed.emit("FTP Authentication Failed")
                 return
             try:
-                ftp.cwd('/Client/{0}/{1}/IOS/{2}/'.format(self.region,self.branch,self.serviceType))
+                ftp.cwd(self.ftpPath.format(self.region,self.branch,self.serviceType))
             except:
                 self.onFailed.emit("Could not found Folder")
                 return
 
-
+          
             
-            self.qaArchiveFileName="MapleM_Stage_{}.{}_1.xcarchive.zip".format(self.branch,self.buildNum)
-            self.iapArchiveFileName_kor="MapleM_StageIAP_{}.0_3.xcarchive.zip".format(self.branch) #Korea
-            self.iapArchiveFileName="MapleM_Stage_IAP_{}.0_3.xcarchive.zip".format(self.branch) #Global,Japan
-            self.liveArchiveFileName="MapleStoryM_{}.{}_{}.xcarchive.zip".format(self.branch,self.buildNum,self.buildNum)
-
-            if self.serviceType == "QA":
-                self.downloadFile=self.qaArchiveFileName
-            elif self.serviceType =="IAP":
-                if self.region=='Korea':
-                    self.downloadFile=self.iapArchiveFileName_kor
-                else:
-                    self.downloadFile=self.iapArchiveFileName
-            else:
-                self.downloadFile=self.liveArchiveFileName
-            
-            
-            #print("DownloadFile:"+self.downloadFile)
-           
-
-
-
-
-            #self.downloadFile='1.60.0_aos_gitHistory.txt'
+            self.downloadFile=self.archiveFileName.format(self.branch,self.buildNum)
+            print(self.downloadFile)
+          
             try:
                 totalSize=ftp.size(self.downloadFile)
             except:
@@ -234,7 +254,9 @@ class DownloadThread(QThread):
 #     return True
 
 # if __name__ == "__main__":
-#     StartSymbolicate()
+#     pass
+    
+
 
 
     

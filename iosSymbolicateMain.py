@@ -17,8 +17,12 @@ class MainWindow(QMainWindow,uiForm_class):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+
+
+        
         self.SetUI()
-        self.symbolicateApi=SymbolicateAPI()
+        self.config=Config()
+        self.symbolicateApi=SymbolicateAPI(self.config)
 
     
     def SetUI(self):
@@ -66,7 +70,7 @@ class MainWindow(QMainWindow,uiForm_class):
 
 
     def DownloadStart(self,region,serviceType,branch,buildNum):
-        self.thread=DownloadThread(region,serviceType,branch,buildNum)
+        self.thread=DownloadThread(self.config,region,serviceType,branch,buildNum)
         self.thread.data_downloaded.connect(self.OnDataReady)
         self.thread.data_progress.connect(self.OnProgressReady)
         self.thread.onFailed.connect(self.OnFailed)

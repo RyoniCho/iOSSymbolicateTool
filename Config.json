@@ -1,0 +1,114 @@
+{
+    "RegionInfo":[
+        {
+            "Region":"Korea",
+            "ftpServer":"10.10.56.187",
+            "ftpPath":"/Client/{0}/{1}/IOS/{2}/",
+            "buildType":[
+                {
+                    "Type":"QA",
+                    "archiveFileName":"MapleM_Stage_{}.{}_1.xcarchive.zip",
+                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/inhouse.app.dSYM",
+                    "app_filePath":"./XCode/Archive/{}/Products/Applications/inhouse.app"
+                },
+                {
+                    "Type":"IAP",
+                    "archiveFileName":"MapleM_StageIAP_{}.0_3.xcarchive.zip",
+                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/maplem.app.dSYM",
+                    "app_filePath":"./XCode/Archive/{}/Products/Applications/maplem.app"
+                },
+                {
+                    "Type":"LIVE",
+                    "archiveFileName":"MapleStoryM_{}.{}_{}.xcarchive.zip",
+                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/maplem.app.dSYM",
+                    "app_filePath":"./XCode/Archive/{}/Products/Applications/maplem.app"
+                }
+            ]
+        },
+
+        {
+            "Region":"Global",
+            "ftpServer":"10.10.56.83",
+            "ftpPath":"/Client/{0}/{1}/IOS/{2}/",
+            "buildType":[
+                {
+                    "Type":"QA",
+                    "archiveFileName":"MapleM_Stage_{}.{}_1.xcarchive.zip",
+                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/inhouse.app.dSYM",
+                    "app_filePath":"./XCode/Archive/{}/Products/Applications/inhouse.app"
+                },
+                {
+                    "Type":"IAP",
+                    "archiveFileName":"MapleM_Stage_IAP_{}.0_3.xcarchive.zip",
+                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/global.app.dSYM",
+                    "app_filePath":"./XCode/Archive/{}/Products/Applications/global.app"
+                },
+                {
+                    "Type":"LIVE",
+                    "archiveFileName":"MapleStoryM_{}.{}_{}.xcarchive.zip",
+                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/global.app.dSYM",
+                    "app_filePath":"./XCode/Archive/{}/Products/Applications/global.app"
+                }
+            ]
+           
+
+            
+        },
+
+        {
+            "Region":"Japan",
+            "ftpServer":"10.10.56.108",
+            "ftpPath":"/Client/{0}/{1}/IOS/{2}/",
+            "buildType":[
+                {
+                    "Type":"QA",
+                    "archiveFileName":"MapleM_Stage_{}.{}_1.xcarchive.zip",
+                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/inhouse.app.dSYM",
+                    "app_filePath":"./XCode/Archive/{}/Products/Applications/inhouse.app"
+                },
+                {
+                    "Type":"IAP",
+                    "archiveFileName":"MapleM_Stage_IAP_{}.0_3.xcarchive.zip",
+                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/japan.app.dSYM",
+                    "app_filePath":"./XCode/Archive/{}/Products/Applications/japan.app"
+                },
+                {
+                    "Type":"LIVE",
+                    "archiveFileName":"MapleStoryM_{}.{}_{}.xcarchive.zip",
+                    "app_dsymPath":"./XCode/Archive/{}/dSYMs/japan.app.dSYM",
+                    "app_filePath":"./XCode/Archive/{}/Products/Applications/japan.app"
+                }
+            ]
+            
+
+            
+        },
+
+        {
+            "Region":"China",
+            "ftpServer":"10.10.56.108",
+            "ftpPath":"/Client/China/{1}/IOS/{2}/",
+            "buildType":[
+                {
+                    "Type":"QA",
+                    "archiveFileName":"MapleM_Stage_{}.{}_1.xcarchive.zip",
+                    "app_dsymPath":"./XCode/Archive/MapleM_Stage_{0}_1.xarchive/dSYMs/{1}.app.dSYM",
+                    "app_filePath":"./XCode/Archive/MapleM_Stage_{0}_1.xarchive/Products/Applications/{1}.app"
+                }
+            ]
+          
+            
+        }
+    ],
+    "CommonSettings":{
+        "symbolicatePath":"SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash",
+        "ftpCurlCommand":"curl ftp://mmjenkins:~tjqjxla1234@10.10.56.{0}/Client/{1}/{2}/IOS/{3}/{4} -o ./{5}",
+        "getXcodePathCommand":"xcode-select -p",
+        "unityFramework_dsym_path":"./XCode/Archive/{}/dSYMs/UnityFramework.framework.dSYM",
+        "ftpUserName":"mmjenkins",
+        "ftpPassword":"~tjqjxla1234"
+        
+
+    }
+
+}
