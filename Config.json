@@ -104,7 +104,7 @@
         "symbolicatePath":"SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash",
         "ftpCurlCommand":"curl ftp://mmjenkins:~tjqjxla1234@10.10.56.{0}/Client/{1}/{2}/IOS/{3}/{4} -o ./{5}",
         "getXcodePathCommand":"xcode-select -p",
-        "unityFramework_dsym_path":"./XCode/Archive/{}/dSYMs/UnityFramework.framework.dSYM",
+        "unityFramework_dsym_path":"./Output/XCode/Archive/{}/dSYMs/UnityFramework.framework.dSYM",
         "ftpUserName":"mmjenkins",
         "ftpPassword":"~tjqjxla1234"
         

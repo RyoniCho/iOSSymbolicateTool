@@ -6,6 +6,7 @@ import os
 import zipfile
 import shutil
 import json
+import traceback
 
 class SymbolicateAPI():
     def __init__(self,_config):
@@ -48,18 +49,31 @@ class SymbolicateAPI():
         return xcodePath
     
     def CopyDsymFile(self,dsymFileZipPath):
+        
         splitPaths=dsymFileZipPath.split('/')
         xcarchiveFileName=splitPaths[-1].replace('.zip','')
+
+        chinaAppVersion=xcarchiveFileName.split('_')[-2].replace('0','C')
 
         unityframework_dsym_path=self.config.commonSettings.unityFramework_dsym_path.format(xcarchiveFileName)
         shutil.move(unityframework_dsym_path,"./UnityFramework.framework.dSYM")
         
         region=["Korea","Global","Japan","China"]
         buildType=["QA","IAP","LIVE"]
+        
+        
         for rg in region:
             for bt in buildType:
-                app_dsym_path= self.config.regionInfos[rg].buildTypes[bt].app_dsymPath.format(xcarchiveFileName) #"./XCode/Archive/{}/dSYMs/inhouse.app.dSYM".format(xcarchiveFileName)
-                app_file_path=self.config.regionInfos[rg].buildTypes[bt].app_filePath.format(xcarchiveFileName)#"./XCode/Archive/{}/Products/Applications/inhouse.app".format(xcarchiveFileName)
+                if rg == "China" and (bt =="IAP" or bt =="LIVE"):
+                    continue
+                if rg !="China":
+                    app_dsym_path= self.config.regionInfos[rg].buildTypes[bt].app_dsymPath.format(xcarchiveFileName) #"./XCode/Archive/{}/dSYMs/inhouse.app.dSYM".format(xcarchiveFileName)
+                    app_file_path=self.config.regionInfos[rg].buildTypes[bt].app_filePath.format(xcarchiveFileName)#"./XCode/Archive/{}/Products/Applications/inhouse.app".format(xcarchiveFileName)
+                else:
+                    app_dsym_path=self.config.regionInfos[rg].buildTypes[bt].app_dsymPath.format(xcarchiveFileName,chinaAppVersion) #"./Output/XCode/Archive/MapleM_Stage_{0}_1.xarchive/dSYMs/{1}.app.dSYM
+                    app_file_path=self.config.regionInfos[rg].buildTypes[bt].app_filePath.format(xcarchiveFileName,chinaAppVersion)#"./Output/XCode/Archive/MapleM_Stage_{0}_1.xarchive/Products/Applications/{1}.app
+
+                
                 app_dsym_file=app_dsym_path.split("/")[-1]
                 app_file=app_file_path.split("/")[-1]
 
@@ -67,6 +81,8 @@ class SymbolicateAPI():
                     shutil.move(app_dsym_path,f"./{app_dsym_file}")
                     shutil.move(app_file_path,f"./{app_file}")
                     return app_dsym_file
+    
+
         return ""
         
 
