@@ -1,6 +1,6 @@
 import subprocess
 import sys
-from PyQt5.QtCore import *
+from PyQt6.QtCore import *
 import ftplib
 import os
 import zipfile
