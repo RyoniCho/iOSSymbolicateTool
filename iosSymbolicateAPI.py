@@ -7,6 +7,7 @@ import zipfile
 import shutil
 import json
 import traceback
+from subprocess import CalledProcessError
 
 class SymbolicateAPI():
     def __init__(self,_config):
@@ -87,27 +88,34 @@ class SymbolicateAPI():
         
 
     def StartSymbolicate(self,dsymFileZipPath,ipsFilePath):
-        if os.path.exists(dsymFileZipPath) is False or os.path.exists(ipsFilePath) is False:
-            return False
+        if os.path.exists(dsymFileZipPath) is False:
+            return (False,"dSym File Path is wrong path(not found)")
+        if os.path.exists(ipsFilePath) is False:
+            return (False,"ips File Path is wrong path(not found)")
 
         self.UnZipFile(dsymFileZipPath)
         dsymFilePath=self.CopyDsymFile(dsymFileZipPath)
         symbolicatePath=self.GetXCodeSymbolicateToolPath()
         outputFile=ipsFilePath.replace(".ips","_output.ips")
+       
         try:
             command='"{} {} {} --output {}"'.format(symbolicatePath,ipsFilePath,dsymFilePath,outputFile)
             #print(command)
             xcodePath='"{}"'.format(self.GetXcodePath().strip())
           
             #print(xcodePath)
-            output=subprocess.check_output("bash symbolicate.sh {} {}".format(xcodePath,command),shell=True)
-            #print(output)
+            subprocess.run("bash symbolicate.sh {} {}".format(xcodePath,command),shell=True,check=True,capture_output=True)
            
-        except:
-           # print(sys.exc_info()[0])
-           # print(sys.exc_info()[1]) 
-            return False
-        return True
+           
+        except CalledProcessError as e:
+            callProcessErr=e.stderr.decode('utf-8')
+            errorMessage=f"Something Wrong: {callProcessErr}"
+            if "No crash report version in" in callProcessErr:
+                errorMessage="IPS file format needed to convert"
+            return (False,errorMessage)
+        return (True,"")
+    def ConvertFromJsonIPS():
+        pass
 
     
 class Config():

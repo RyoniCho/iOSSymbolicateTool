@@ -53,10 +53,17 @@ class MainWindow(QMainWindow,uiForm_class):
     def Callback_SymbolicateButton(self):
 
         self.SetEnableDownloadUI(False)
-        message="Symbolicate Failed"
+        message="Symbolicate Failed:{}"
         
-        if self.symbolicateApi.StartSymbolicate(self.UI_dsymPath_lineEdit.text(),self.UI_ipsPath_lineEdit.text()):
+        result=False
+        msg=''
+
+        result,msg=self.symbolicateApi.StartSymbolicate(self.UI_dsymPath_lineEdit.text(),self.UI_ipsPath_lineEdit.text())
+        
+        if result == True:
             message="Symbolicate Success"
+        else:
+            message=message.format(msg)
 
         
         msgBox=QMessageBox()
