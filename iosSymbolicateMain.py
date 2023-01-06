@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5 import uic
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6 import uic
 import sys
 from iosSymbolicateAPI import *
 import os
@@ -53,16 +53,23 @@ class MainWindow(QMainWindow,uiForm_class):
     def Callback_SymbolicateButton(self):
 
         self.SetEnableDownloadUI(False)
-        message="Symbolicate Failed"
+        message="Symbolicate Failed:{}"
         
-        if self.symbolicateApi.StartSymbolicate(self.UI_dsymPath_lineEdit.text(),self.UI_ipsPath_lineEdit.text()):
+        result=False
+        msg=''
+
+        result,msg=self.symbolicateApi.StartSymbolicate(self.UI_dsymPath_lineEdit.text(),self.UI_ipsPath_lineEdit.text())
+        
+        if result == True:
             message="Symbolicate Success"
+        else:
+            message=message.format(msg)
 
         
         msgBox=QMessageBox()
         msgBox.setWindowTitle("Process")
         msgBox.setText(message)
-        msgBox.setStandardButtons(QMessageBox.Ok)
+        msgBox.setStandardButtons(QMessageBox.StandardButton.Ok)
         msgBox.exec()
         
         self.SetEnableDownloadUI(True)
@@ -109,7 +116,7 @@ class MainWindow(QMainWindow,uiForm_class):
         msgBox=QMessageBox()
         msgBox.setWindowTitle("ERROR")
         msgBox.setText(data)
-        msgBox.setStandardButtons(QMessageBox.Ok)
+        msgBox.setStandardButtons(QMessageBox.StandardButton.Ok)
         msgBox.exec()
         self.SetEnableDownloadUI(True)
 
@@ -130,4 +137,4 @@ if __name__=="__main__":
     app=QApplication(sys.argv)
     window=MainWindow()
     window.show()
-    app.exec_()
+    app.exec()
