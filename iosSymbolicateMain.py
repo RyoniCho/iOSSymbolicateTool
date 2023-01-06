@@ -30,6 +30,7 @@ class MainWindow(QMainWindow,uiForm_class):
         self.UI_dsymFile_toolButton.clicked.connect(self.Callback_dsymFileToolButton)
         self.UI_ipsFile_toolButton.clicked.connect(self.Callback_ipsFileToolButton)
         self.UI_symbolicate_pushButton.clicked.connect(self.Callback_SymbolicateButton)
+        self.UI_convertIPS_pushButton.clicked.connect(self.Callback_convertIPSButton)
         
 
       
@@ -75,6 +76,26 @@ class MainWindow(QMainWindow,uiForm_class):
         self.SetEnableDownloadUI(True)
 
         self.symbolicateApi.DeleteOutput()
+
+    def Callback_convertIPSButton(self):
+        self.SetEnableDownloadUI(False)
+        result,msg=self.symbolicateApi.ConvertFromJsonIPS(self.UI_ipsPath_lineEdit.text())
+        message=''
+        if result == True:
+            message="Convert IPS File success \n(re-set IPS File path(converted)"
+            self.statusbar.showMessage("Convert IPS File success. Start Symbolicate!")
+            self.UI_ipsPath_lineEdit.setText(msg)
+        else:
+            message=f"Failed to convert IPS file : {msg}"
+        
+        msgBox=QMessageBox()
+        msgBox.setWindowTitle("Process")
+        msgBox.setText(message)
+        msgBox.setStandardButtons(QMessageBox.StandardButton.Ok)
+        msgBox.exec()
+
+        self.SetEnableDownloadUI(True)
+        pass
         
         
 
@@ -98,6 +119,7 @@ class MainWindow(QMainWindow,uiForm_class):
         self.UI_symbolicate_pushButton.setEnabled(enable)
         self.UI_ipsPath_lineEdit.setEnabled(enable)
         self.UI_dsymPath_lineEdit.setEnabled(enable)
+        self.UI_convertIPS_pushButton.setEnabled(enable)
 
 
     def OnDataReady(self,data):
@@ -134,6 +156,8 @@ class MainWindow(QMainWindow,uiForm_class):
 
 
 if __name__=="__main__":
+    print(os.getcwd())
+    
     app=QApplication(sys.argv)
     window=MainWindow()
     window.show()

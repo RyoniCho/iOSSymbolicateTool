@@ -114,8 +114,42 @@ class SymbolicateAPI():
                 errorMessage="IPS file format needed to convert"
             return (False,errorMessage)
         return (True,"")
-    def ConvertFromJsonIPS():
-        pass
+
+    def ConvertFromJsonIPS(self,ipsPath):
+        try:
+            if ipsPath is None or ipsPath == "":
+                return False,"Fail to convert : ips file path is blank"
+            
+            tempFolderPath=os.path.join(os.getcwd(),"Temp")
+            if not os.path.exists(tempFolderPath):
+                os.makedirs(tempFolderPath)
+
+            inputIpsFileName=os.path.basename(ipsPath)
+            outputIpsFileName=inputIpsFileName.replace(".ips","_Converted.ips")
+
+            inputIpsFilePath=os.path.join(tempFolderPath,inputIpsFileName)
+            outputIpsPath=os.path.join(tempFolderPath,outputIpsFileName)
+
+            print(ipsPath)
+            print(outputIpsPath)
+
+            
+
+            if os.path.exists(ipsPath):
+                shutil.copy(ipsPath,inputIpsFilePath)
+            else:
+                False,"Fail to convert : ips file not found"
+            
+
+            o=subprocess.run(f"swift convertFromJSON.swift -i Temp/{inputIpsFileName} -o Temp/{outputIpsFileName}",shell=True,check=True,capture_output=True,cwd=None)
+            print(o)
+        except CalledProcessError as e:
+            return (False,f"Failed to convert :{e.stderr.decode('utf-8')}")
+        
+        return (True,outputIpsPath)
+            
+
+        
 
     
 class Config():
