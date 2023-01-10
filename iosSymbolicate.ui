@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>iOS Symbolicate Tool ver0.1</string>
+   <string>iOS Symbolicate Tool ver1.1</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QGroupBox" name="groupBox">
