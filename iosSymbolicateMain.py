@@ -191,7 +191,7 @@ class SubWindow(QWidget):
         layout.addWidget(self.button)
         layout.addWidget(self.tb)
         self.setLayout(layout)
-        self.setMinimumSize(1000,500)
+        self.setMinimumSize(1200,500)
         print("sub windows")
 
     def SetSymbolicateTextToTextBrowser(self,_text):
