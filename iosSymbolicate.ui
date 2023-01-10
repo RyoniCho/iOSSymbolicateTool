@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>FTP폴더에서 다운로드(197 machine)</string>
+     <string>FTP폴더에서 다운로드</string>
     </property>
     <widget class="QWidget" name="gridLayoutWidget">
      <property name="geometry">
@@ -261,14 +261,27 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="UI_SaveAsPushButton">
     <property name="geometry">
      <rect>
-      <x>320</x>
+      <x>520</x>
       <y>250</y>
-      <width>401</width>
+      <width>201</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
      <string>Save As</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="UI_newWindowPushButton">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>250</y>
+      <width>181</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>New Window</string>
     </property>
    </widget>
   </widget>
