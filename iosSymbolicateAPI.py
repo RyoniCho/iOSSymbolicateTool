@@ -8,6 +8,7 @@ import shutil
 import json
 import traceback
 from subprocess import CalledProcessError
+import time
 
 class SymbolicateAPI():
     def __init__(self,_config):
@@ -38,9 +39,17 @@ class SymbolicateAPI():
 
     def DeleteOutput(self):
         try:
-            shutil.rmtree('./Output')
+            if os.path.exists('./Output'): 
+                shutil.rmtree('./Output')
         except:
             pass
+    def DeleteTempFolder(self):
+        try:
+            if os.path.exists('./Temp'):
+                shutil.rmtree('./Temp')
+        except Exception as e:
+            print(e)
+
 
 
     def GetXCodeSymbolicateToolPath(self):
@@ -57,8 +66,10 @@ class SymbolicateAPI():
         chinaAppVersion=xcarchiveFileName.split('_')[-2].replace('0','C')
 
         unityframework_dsym_path=self.config.commonSettings.unityFramework_dsym_path.format(xcarchiveFileName)
-        shutil.move(unityframework_dsym_path,"./UnityFramework.framework.dSYM")
-        
+        #shutil.move(unityframework_dsym_path,"./UnityFramework.framework.dSYM")
+        tempFolder=self.MakeTempFolder()
+
+        self.MoveFile(unityframework_dsym_path,os.path.join(tempFolder,"UnityFramework.framework.dSYM"))
         region=["Korea","Global","Japan","China"]
         buildType=["QA","IAP","LIVE"]
         
@@ -77,11 +88,16 @@ class SymbolicateAPI():
                 
                 app_dsym_file=app_dsym_path.split("/")[-1]
                 app_file=app_file_path.split("/")[-1]
-
+               
                 if os.path.exists(app_dsym_path):
-                    shutil.move(app_dsym_path,f"./{app_dsym_file}")
-                    shutil.move(app_file_path,f"./{app_file}")
-                    return app_dsym_file
+                    
+                    #shutil.move(app_dsym_path,f"./{app_dsym_file}")
+                    #shutil.move(app_file_path,f"./{app_file}")
+
+                    self.MoveFile(app_dsym_path,tempFolder)#f"./{app_dsym_file}")
+                    self.MoveFile(app_file_path,tempFolder)#f"./{app_file}")
+                  
+                    return os.path.join(tempFolder,"UnityFramework.framework.dSYM")#"./UnityFramework.framework.dSYM"
     
 
         return ""
@@ -96,16 +112,20 @@ class SymbolicateAPI():
         self.UnZipFile(dsymFileZipPath)
         dsymFilePath=self.CopyDsymFile(dsymFileZipPath)
         symbolicatePath=self.GetXCodeSymbolicateToolPath()
-        outputFile=ipsFilePath.replace(".ips","_output.ips")
-       
+        #outputFile=ipsFilePath.replace(".ips","_output.ips")
+        symbolicatedOutput=""
+        time.sleep(3)
+        
         try:
-            command='"{} {} {} --output {}"'.format(symbolicatePath,ipsFilePath,dsymFilePath,outputFile)
+            command='"{} {} {}"'.format(symbolicatePath,ipsFilePath,dsymFilePath)
+            print("COMMAND:"+command)
+            #command='"{} {} {} --output {}"'.format(symbolicatePath,ipsFilePath,dsymFilePath,outputFile)
             #print(command)
             xcodePath='"{}"'.format(self.GetXcodePath().strip())
-          
-            #print(xcodePath)
-            subprocess.run("bash symbolicate.sh {} {}".format(xcodePath,command),shell=True,check=True,capture_output=True)
            
+            #print(xcodePath)
+            output=subprocess.run("bash symbolicate.sh {} {}".format(xcodePath,command),shell=True,check=True,capture_output=True)
+            symbolicatedOutput=output.stdout.decode('utf-8')
            
         except CalledProcessError as e:
             callProcessErr=e.stderr.decode('utf-8')
@@ -113,16 +133,14 @@ class SymbolicateAPI():
             if "No crash report version in" in callProcessErr:
                 errorMessage="IPS file format needed to convert"
             return (False,errorMessage)
-        return (True,"")
+        return (True,symbolicatedOutput)
 
     def ConvertFromJsonIPS(self,ipsPath):
         try:
             if ipsPath is None or ipsPath == "":
                 return False,"Fail to convert : ips file path is blank"
             
-            tempFolderPath=os.path.join(os.getcwd(),"Temp")
-            if not os.path.exists(tempFolderPath):
-                os.makedirs(tempFolderPath)
+            tempFolderPath=self.MakeTempFolder()
 
             inputIpsFileName=os.path.basename(ipsPath)
             outputIpsFileName=inputIpsFileName.replace(".ips","_Converted.ips")
@@ -142,11 +160,26 @@ class SymbolicateAPI():
             
 
             o=subprocess.run(f"swift convertFromJSON.swift -i Temp/{inputIpsFileName} -o Temp/{outputIpsFileName}",shell=True,check=True,capture_output=True,cwd=None)
-            print(o)
+           
         except CalledProcessError as e:
             return (False,f"Failed to convert :{e.stderr.decode('utf-8')}")
         
         return (True,outputIpsPath)
+    def MakeTempFolder(self):
+        tempFolderPath=os.path.join(os.getcwd(),"Temp")
+        if not os.path.exists(tempFolderPath):
+            os.makedirs(tempFolderPath)
+        return tempFolderPath
+    def MoveFile(self,src,dst):
+        try:
+            proc=subprocess.Popen(f"mv {src} {dst}",shell=True)
+            proc.wait()
+            print("Move File Success")
+            
+        except Exception as e:
+            print(f"MoveFile error: {e}")
+            
+
             
 
         

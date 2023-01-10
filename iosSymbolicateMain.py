@@ -4,6 +4,7 @@ from PyQt6 import uic
 import sys
 from iosSymbolicateAPI import *
 import os
+from PyQt6 import QtGui
 
 def ResourcePath(relativePath):
     basePath=getattr(sys,'_MEIPASS',os.path.dirname(os.path.abspath(__file__)))
@@ -23,6 +24,8 @@ class MainWindow(QMainWindow,uiForm_class):
         self.SetUI()
         self.config=Config()
         self.symbolicateApi=SymbolicateAPI(self.config)
+        self.symbolicateApi.DeleteOutput()
+        self.symbolicateApi.DeleteTempFolder()
 
     
     def SetUI(self):
@@ -31,7 +34,13 @@ class MainWindow(QMainWindow,uiForm_class):
         self.UI_ipsFile_toolButton.clicked.connect(self.Callback_ipsFileToolButton)
         self.UI_symbolicate_pushButton.clicked.connect(self.Callback_SymbolicateButton)
         self.UI_convertIPS_pushButton.clicked.connect(self.Callback_convertIPSButton)
-        
+        self.UI_SaveAsPushButton.clicked.connect(self.Callback_saveAsButton)
+    
+       
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+
+        self.symbolicateApi.DeleteTempFolder()
+        return super().closeEvent(a0)
 
       
 
@@ -48,7 +57,7 @@ class MainWindow(QMainWindow,uiForm_class):
         self.UI_dsymPath_lineEdit.setText(filePath[0])
 
     def Callback_ipsFileToolButton(self):
-        filePath=QFileDialog.getOpenFileName(self)
+        filePath=QFileDialog.getOpenFileName(self,"Open Crash Report(ips/crash) File","","Crash File(*.ips *.crash)")
         self.UI_ipsPath_lineEdit.setText(filePath[0])
     
     def Callback_SymbolicateButton(self):
@@ -63,11 +72,12 @@ class MainWindow(QMainWindow,uiForm_class):
         
         if result == True:
             message="Symbolicate Success"
+            self.UI_textBrowser.setText(msg)
         else:
             message=message.format(msg)
 
         
-        msgBox=QMessageBox()
+        msgBox=QMessageBox() 
         msgBox.setWindowTitle("Process")
         msgBox.setText(message)
         msgBox.setStandardButtons(QMessageBox.StandardButton.Ok)
@@ -96,6 +106,16 @@ class MainWindow(QMainWindow,uiForm_class):
 
         self.SetEnableDownloadUI(True)
         pass
+    def Callback_saveAsButton(self):
+        file_name=QFileDialog.getSaveFileName(self,"Save As","","Crash File(*.ips *.crash)")
+        if file_name[0]:
+            ipsText=self.UI_textBrowser.toPlainText()
+            with open(file_name[0],'w',encoding='utf-8') as f:
+                f.write(ipsText)
+        
+       
+       
+
         
         
 
@@ -151,13 +171,21 @@ class MainWindow(QMainWindow,uiForm_class):
 
         
     
+class SubWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.label = QLabel("Another Window")
+        layout=QVBoxLayout()
+        layout.addWidget(self.label)
+        self.setLayout(layout)
+        print("sub windows")
 
 
 
 
 if __name__=="__main__":
     print(os.getcwd())
-    
+
     app=QApplication(sys.argv)
     window=MainWindow()
     window.show()

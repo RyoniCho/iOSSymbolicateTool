@@ -92,8 +92,8 @@
                 {
                     "Type":"QA",
                     "archiveFileName":"MapleM_Stage_{}.{}_1.xcarchive.zip",
-                    "app_dsymPath":"./Output/XCode/Archive/MapleM_Stage_{0}_1.xarchive/dSYMs/{1}.app.dSYM",
-                    "app_filePath":"./Output/XCode/Archive/MapleM_Stage_{0}_1.xarchive/Products/Applications/{1}.app"
+                    "app_dsymPath":"./Output/XCode/Archive/{0}/dSYMs/{1}.app.dSYM",
+                    "app_filePath":"./Output/XCode/Archive/{0}/Products/Applications/{1}.app"
                 }
             ]
           
