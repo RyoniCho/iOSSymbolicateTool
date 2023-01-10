@@ -131,7 +131,7 @@ class SymbolicateAPI():
             callProcessErr=e.stderr.decode('utf-8')
             errorMessage=f"Something Wrong: {callProcessErr}"
             if "No crash report version in" in callProcessErr:
-                errorMessage="IPS file format needed to convert"
+                errorMessage="[IPS file format needed to convert]\nips파일포맷이 최근포맷이라 포맷변경이 필요합니다.\n\nConvert버튼을 누르세요"
             return (False,errorMessage)
         return (True,symbolicatedOutput)
 
@@ -174,7 +174,7 @@ class SymbolicateAPI():
         try:
             proc=subprocess.Popen(f"mv {src} {dst}",shell=True)
             proc.wait()
-            print("Move File Success")
+            
             
         except Exception as e:
             print(f"MoveFile error: {e}")

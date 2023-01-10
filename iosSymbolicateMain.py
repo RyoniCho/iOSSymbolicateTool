@@ -35,6 +35,8 @@ class MainWindow(QMainWindow,uiForm_class):
         self.UI_symbolicate_pushButton.clicked.connect(self.Callback_SymbolicateButton)
         self.UI_convertIPS_pushButton.clicked.connect(self.Callback_convertIPSButton)
         self.UI_SaveAsPushButton.clicked.connect(self.Callback_saveAsButton)
+        self.UI_newWindowPushButton.clicked.connect(self.Callback_newWindowButton)
+        self.w2=None
     
        
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
@@ -92,7 +94,7 @@ class MainWindow(QMainWindow,uiForm_class):
         result,msg=self.symbolicateApi.ConvertFromJsonIPS(self.UI_ipsPath_lineEdit.text())
         message=''
         if result == True:
-            message="Convert IPS File success \n(re-set IPS File path(converted)"
+            message="[Convert IPS File success]\n(다시 symbolicate버튼을 누르시면 됩니다)"
             self.statusbar.showMessage("Convert IPS File success. Start Symbolicate!")
             self.UI_ipsPath_lineEdit.setText(msg)
         else:
@@ -112,12 +114,15 @@ class MainWindow(QMainWindow,uiForm_class):
             ipsText=self.UI_textBrowser.toPlainText()
             with open(file_name[0],'w',encoding='utf-8') as f:
                 f.write(ipsText)
-        
-       
-       
+    def Callback_newWindowButton(self):
 
-        
-        
+        if self.w2 is None:
+            self.w2= SubWindow()
+
+        text=self.UI_textBrowser.toPlainText()
+        self.w2.SetSymbolicateTextToTextBrowser(text)
+        self.w2.show()
+
 
 
     def DownloadStart(self,region,serviceType,branch,buildNum):
@@ -174,11 +179,32 @@ class MainWindow(QMainWindow,uiForm_class):
 class SubWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.label = QLabel("Another Window")
+        self.button=QPushButton("Save as File")
+        self.button.clicked.connect(self.Callback_SaveButton)
+
+       
+        self.tb=QTextBrowser() 
+      
+        
         layout=QVBoxLayout()
-        layout.addWidget(self.label)
+
+        layout.addWidget(self.button)
+        layout.addWidget(self.tb)
         self.setLayout(layout)
+        self.setMinimumSize(1000,500)
         print("sub windows")
+
+    def SetSymbolicateTextToTextBrowser(self,_text):
+        self.tb.setText(_text)
+
+    def Callback_SaveButton(self):
+
+        file_name=QFileDialog.getSaveFileName(self,"Save As","","Crash File(*.ips *.crash)")
+        if file_name[0]:
+            ipsText=self.tb.toPlainText()
+            with open(file_name[0],'w',encoding='utf-8') as f:
+                f.write(ipsText)
+        
 
 
 
